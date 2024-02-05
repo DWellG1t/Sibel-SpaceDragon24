@@ -547,11 +547,14 @@ if not na(trade)
 //alertcondition(can_long and na(trade), "Long signal", "Long") - для лонга
 //alertcondition(can_short and na(trade), "Short signal", "Short") - для шорта
 //alertcondition(can_short or can_long and na(trade), "New signal", "Check chart to see signal direction")
+// При открытии сделки сохраняет цену, здесь проверяет цену на TP и если что, закрывает сделку
 if (can_long and na(trade))
-    strategy.entry("Enter Long", strategy.long)
-    
+    strategy.close("Enter Short")
+    strategy.entry("Enter Long", strategy.long, 3)
+
 if (can_short and na(trade))
-    strategy.entry("Enter Short", strategy.short)
+    strategy.close("Enter Long")
+    strategy.entry("Enter Short", strategy.short, 3)
 
 if can_long or can_short and na(trade)
     first_trade_date := trade_count == 0 ? timestamp(year, month, dayofmonth, hour, minute) : first_trade_date
@@ -593,11 +596,11 @@ if can_long or can_short and na(trade)
         tp4_label := label.new(bar_index, trade.tp4_price, str.tostring(trade.tp4_price), style = label.style_label_left, color = color.rgb(255, 255, 255, 100), textcolor = color.green)
         lable_at_signal := label.new(bar_index, is_long_trend ? trade.tp4_price * 1.004 : trade.tp4_price * 0.996, "", style = label.style_label_center, textcolor = color.white)
     // For long   
-    if ta.crossunder(trade.entry_price, trade.break_even_price)
-        strategy.close("Enter Long")
+    // if ta.crossunder(trade.break_even_price, lastPrice)
+    //     strategy.close("Enter Long")
     // For short
-    if ta.crossover(trade.entry_price, trade.break_even_price)
-        strategy.close("Enter Short")
+    // if ta.crossover(trade.entry_price, trade.break_even_price)
+    //     strategy.close("Enter Short")
 
 //------------------------------------------------------RSI------------------------------------------------------------\\
 rsi_value = ta.rsi(close, len)
