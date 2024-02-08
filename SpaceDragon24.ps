@@ -594,11 +594,11 @@ else if (tradeSide == "SHORT" and close >= entryPrice - (entryPrice * sl_percent
 
 if (can_long and na(trade))
     strategy.close("Enter Short")
-    strategy.entry("Enter Long", strategy.long, 3)
+    strategy.entry("Enter Long", strategy.long)
 
 if (can_short and na(trade))
     strategy.close("Enter Long")
-    strategy.entry("Enter Short", strategy.short, 3)
+    strategy.entry("Enter Short", strategy.short)
 
 // plot(91)
 
