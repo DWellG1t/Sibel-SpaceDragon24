@@ -544,10 +544,54 @@ if not na(trade)
             loss_streak := loss_in_a_row > loss_streak ? loss_in_a_row : loss_streak
         trade := na
 
+// tp1_percent /= 100
+// tp2_percent /= 100
+// tp3_percent /= 100
+// tp4_percent /= 100
+// tp1_percent_fix /= 100
+// tp2_percent_fix /= 100
+// tp3_percent_fix /= 100
+// tp4_percent_fix /= 100
+// sl_percent /= 100
+// fixed_stop := strategy_s.fixed_stop
+
 //alertcondition(can_long and na(trade), "Long signal", "Long") - для лонга
 //alertcondition(can_short and na(trade), "Short signal", "Short") - для шорта
 //alertcondition(can_short or can_long and na(trade), "New signal", "Check chart to see signal direction")
-// При открытии сделки сохраняет цену, здесь проверяет цену на TP и если что, закрывает сделку
+
+var float entryPrice = 0
+var float currentTP = 0
+var int currentStoploss = 0
+var string tradeSide = ""
+
+if (tradeSide == "LONG" and  close >= entryPrice * (1 + currentTP))
+    strategy.close("Enter Long", qty_percent = tp1_percent_fix * 100)
+    currentTP := tp2_percent
+else if (tradeSide == "LONG" and  close >= entryPrice * (1 + currentTP))
+    strategy.close("Enter Long", qty_percent = tp2_percent_fix * 100)
+    currentTP := tp3_percent
+else if (tradeSide == "LONG" and  close >= entryPrice * (1 + currentTP))
+    strategy.close("Enter Long", qty_percent = tp3_percent_fix * 100)
+    currentTP := tp4_percent
+else if (tradeSide == "LONG" and  close >= entryPrice * (1 + currentTP))
+    strategy.close("Enter Long", qty_percent = tp4_percent_fix * 100)
+else if (tradeSide == "LONG" and close <= entryPrice - (entryPrice * sl_percent))
+    strategy.close("Enter Long")
+
+if (tradeSide == "SHORT" and  close <= entryPrice * (1 + currentTP))
+    strategy.close("Enter Short", qty_percent = tp1_percent_fix * 100)
+    currentTP := tp2_percent
+else if (tradeSide == "SHORT" and  close <= entryPrice * (1 + currentTP))
+    strategy.close("Enter Short", qty_percent = tp2_percent_fix * 100)
+    currentTP := tp3_percent
+else if (tradeSide == "SHORT" and  close <= entryPrice * (1 + currentTP))
+    strategy.close("Enter Short", qty_percent = tp3_percent_fix * 100)
+    currentTP := tp4_percent
+else if (tradeSide == "SHORT" and  close <= entryPrice * (1 + currentTP))
+    strategy.close("Enter Short", qty_percent = tp4_percent_fix * 100)
+else if (tradeSide == "SHORT" and close >= entryPrice - (entryPrice * sl_percent))
+    strategy.close("Enter Short")
+
 if (can_long and na(trade))
     strategy.close("Enter Short")
     strategy.entry("Enter Long", strategy.long, 3)
@@ -556,10 +600,15 @@ if (can_short and na(trade))
     strategy.close("Enter Long")
     strategy.entry("Enter Short", strategy.short, 3)
 
+// plot(91)
+
 if can_long or can_short and na(trade)
+    entryPrice := close
+    currentTP := tp1_percent
     first_trade_date := trade_count == 0 ? timestamp(year, month, dayofmonth, hour, minute) : first_trade_date
     trade := Trade.new()
     trade.side := can_long ? "LONG" : "SHORT"
+    tradeSide := can_long ? "LONG" : "SHORT"
     trade.entry_price := close
     trade.entry_hit := true
     trade.sl_price := math.round_to_mintick(can_long ? fixed_stop ? trade.entry_price * (1 - sl_percent) : fib_786 * (1 - sl_percent) : fixed_stop ? trade.entry_price * (1 + sl_percent) : fib_236 * (1 + sl_percent))
