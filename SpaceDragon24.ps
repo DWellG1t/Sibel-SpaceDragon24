@@ -564,32 +564,32 @@ var float currentTP = 0
 var int currentStoploss = 0
 var string tradeSide = ""
 
-if (tradeSide == "LONG" and  close >= entryPrice * (1 + currentTP))
+if (tradeSide == "LONG" and close >= entryPrice * (1 + currentTP))
     strategy.close("Enter Long", qty_percent = tp1_percent_fix * 100)
     currentTP := tp2_percent
-else if (tradeSide == "LONG" and  close >= entryPrice * (1 + currentTP))
+else if (tradeSide == "LONG" and close >= entryPrice * (1 + currentTP))
     strategy.close("Enter Long", qty_percent = tp2_percent_fix * 100)
     currentTP := tp3_percent
-else if (tradeSide == "LONG" and  close >= entryPrice * (1 + currentTP))
+else if (tradeSide == "LONG" and close >= entryPrice * (1 + currentTP))
     strategy.close("Enter Long", qty_percent = tp3_percent_fix * 100)
     currentTP := tp4_percent
-else if (tradeSide == "LONG" and  close >= entryPrice * (1 + currentTP))
+else if (tradeSide == "LONG" and close >= entryPrice * (1 + currentTP))
     strategy.close("Enter Long", qty_percent = tp4_percent_fix * 100)
 else if (tradeSide == "LONG" and close <= entryPrice - (entryPrice * sl_percent))
     strategy.close("Enter Long")
 
-if (tradeSide == "SHORT" and  close <= entryPrice * (1 + currentTP))
+if (tradeSide == "SHORT" and close <= entryPrice - (entryPrice * currentTP))
     strategy.close("Enter Short", qty_percent = tp1_percent_fix * 100)
     currentTP := tp2_percent
-else if (tradeSide == "SHORT" and  close <= entryPrice * (1 + currentTP))
+else if (tradeSide == "SHORT" and close <= entryPrice - (entryPrice * currentTP))
     strategy.close("Enter Short", qty_percent = tp2_percent_fix * 100)
     currentTP := tp3_percent
-else if (tradeSide == "SHORT" and  close <= entryPrice * (1 + currentTP))
+else if (tradeSide == "SHORT" and close <= entryPrice - (entryPrice * currentTP))
     strategy.close("Enter Short", qty_percent = tp3_percent_fix * 100)
     currentTP := tp4_percent
-else if (tradeSide == "SHORT" and  close <= entryPrice * (1 + currentTP))
+else if (tradeSide == "SHORT" and close <= entryPrice - (entryPrice * currentTP))
     strategy.close("Enter Short", qty_percent = tp4_percent_fix * 100)
-else if (tradeSide == "SHORT" and close >= entryPrice - (entryPrice * sl_percent))
+else if (tradeSide == "SHORT" and close >= entryPrice + (entryPrice * sl_percent))
     strategy.close("Enter Short")
 
 if (can_long and na(trade))
