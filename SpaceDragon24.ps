@@ -574,7 +574,8 @@ else if (tradeSide == "LONG" and close >= entryPrice * (1 + currentTP))
     strategy.close("Enter Long", qty_percent = tp3_percent_fix * 100)
     currentTP := tp4_percent
 else if (tradeSide == "LONG" and close >= entryPrice * (1 + currentTP))
-    strategy.close("Enter Long", qty_percent = tp4_percent_fix * 100)
+    // strategy.close("Enter Long", qty_percent = tp4_percent_fix * 100)
+    strategy.close("Enter Long")
 else if (tradeSide == "LONG" and close <= entryPrice - (entryPrice * sl_percent))
     strategy.close("Enter Long")
 
@@ -588,7 +589,8 @@ else if (tradeSide == "SHORT" and close <= entryPrice - (entryPrice * currentTP)
     strategy.close("Enter Short", qty_percent = tp3_percent_fix * 100)
     currentTP := tp4_percent
 else if (tradeSide == "SHORT" and close <= entryPrice - (entryPrice * currentTP))
-    strategy.close("Enter Short", qty_percent = tp4_percent_fix * 100)
+    // strategy.close("Enter Short", qty_percent = tp4_percent_fix * 100)
+    strategy.close("Enter Short")
 else if (tradeSide == "SHORT" and close >= entryPrice + (entryPrice * sl_percent))
     strategy.close("Enter Short")
 
@@ -600,7 +602,7 @@ if (can_short and na(trade))
     strategy.close("Enter Long")
     strategy.entry("Enter Short", strategy.short)
 
-// plot(91)
+plot(tp3_percent_fix)
 
 if can_long or can_short and na(trade)
     entryPrice := close
