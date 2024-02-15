@@ -577,7 +577,7 @@ else if (tradeSide == "LONG" and close >= entryPrice * (1 + currentTP) and curre
     // currentSL := tp2_percent + takeprofitSL
 else if (tradeSide == "LONG" and close >= entryPrice * (1 + currentTP) and currentTP == tp3_percent)
     strategy.close("Enter Long", qty_percent = tp3_percent_fix * 100)
-    // currentTP := tp4_percent
+    currentTP := tp4_percent
     // currentSL := tp3_percent + takeprofitSL
 else if (tradeSide == "LONG" and close >= entryPrice * (1 + currentTP) and currentTP == tp4_percent)
     // strategy.close("Enter Long", qty_percent = tp4_percent_fix * 100)
@@ -597,7 +597,7 @@ else if (tradeSide == "SHORT" and close <= entryPrice - (entryPrice * currentTP)
 else if (tradeSide == "SHORT" and close <= entryPrice - (entryPrice * currentTP) and currentTP == tp3_percent)
     strategy.close("Enter Short", qty_percent = tp3_percent_fix * 100)
     currentTP := tp4_percent
-    currentSL := tp3_percent + takeprofitSL
+    // currentSL := tp3_percent + takeprofitSL
 else if (tradeSide == "SHORT" and close <= entryPrice - (entryPrice * currentTP) and currentTP == tp4_percent)
     // strategy.close("Enter Short", qty_percent = tp4_percent_fix * 100)
     strategy.close("Enter Short")
