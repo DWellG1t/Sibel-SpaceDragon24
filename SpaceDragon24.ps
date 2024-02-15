@@ -562,6 +562,7 @@ if not na(trade)
 var float entryPrice = 0
 var float currentTP = 0
 var float currentSL = 0
+sl_percent := 5 / 100
 var float takeprofitSL = 0.4 / 100 // Изменить 0.4 на нужную цифру, отвечает за стоплоссы для takeprofits
 var string tradeSide = ""
 
@@ -619,7 +620,7 @@ if (can_short and na(trade))
     strategy.close("Enter Long")
     strategy.entry("Enter Short", strategy.short)
 
-plot(currentSL)
+plot(sl_percent)
 
 if can_long or can_short and na(trade)
     entryPrice := close
