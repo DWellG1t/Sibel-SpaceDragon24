@@ -572,7 +572,7 @@ if (tradeSide == "LONG" and close >= entryPrice * (1 + currentTP) and currentTP 
     // currentSL := 0
 else if (tradeSide == "LONG" and close >= entryPrice * (1 + currentTP) and currentTP == tp2_percent)
     strategy.close("Enter Long", qty_percent = tp2_percent_fix * 100)
-    // currentTP := tp3_percent
+    currentTP := tp3_percent
     currentSL := 0
     // currentSL := tp2_percent + takeprofitSL
 else if (tradeSide == "LONG" and close >= entryPrice * (1 + currentTP) and currentTP == tp3_percent)
