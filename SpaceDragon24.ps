@@ -562,7 +562,7 @@ if not na(trade)
 var float entryPrice = 0
 var float currentTP = 0
 var float currentSL = 0
-sl_percent := 5 / 100
+sl_percent := float(5) / 100
 var float takeprofitSL = 0.4 / 100 // Изменить 0.4 на нужную цифру, отвечает за стоплоссы для takeprofits
 var string tradeSide = ""
 
@@ -584,9 +584,9 @@ else if (tradeSide == "LONG" and close >= entryPrice * (1 + currentTP) and curre
 else if (tradeSide == "LONG" and close >= entryPrice * (1 + currentTP) and currentTP == tp4_percent)
     // strategy.close("Enter Long", qty_percent = tp4_percent_fix * 100)
     strategy.close("Enter Long")
-else if (currentSL != 0 and tradeSide == "LONG" and close <= entryPrice + (entryPrice * currentSL))
+else if (currentSL != 0 and tradeSide == "LONG" and close <= entryPrice - (entryPrice * currentSL))
     strategy.close("Enter Long")
-else if (currentSL == 0 and tradeSide == "LONG" and close <= entryPrice + (entryPrice * sl_percent))
+else if (currentSL == 0 and tradeSide == "LONG" and close <= entryPrice - (entryPrice * sl_percent))
     strategy.close("Enter Long")
 
 
@@ -607,9 +607,9 @@ else if (tradeSide == "SHORT" and close <= entryPrice - (entryPrice * currentTP)
 else if (tradeSide == "SHORT" and close <= entryPrice - (entryPrice * currentTP) and currentTP == tp4_percent)
     // strategy.close("Enter Short", qty_percent = tp4_percent_fix * 100)
     strategy.close("Enter Short")
-else if (currentSL != 0 and tradeSide == "SHORT" and close >= entryPrice - (entryPrice * currentSL))
+else if (currentSL != 0 and tradeSide == "SHORT" and close >= entryPrice + (entryPrice * currentSL))
     strategy.close("Enter Short")
-else if (currentSL == 0 and tradeSide == "SHORT" and close >= entryPrice - (entryPrice * sl_percent))
+else if (currentSL == 0 and tradeSide == "SHORT" and close >= entryPrice + (entryPrice * sl_percent))
     strategy.close("Enter Short")
 
 if (can_long and na(trade))
