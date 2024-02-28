@@ -26,6 +26,8 @@ type Strategy_settings
 	float tp4_percent_fix = 0
 	bool fixed_stop = false
 	float sl_percent = 0
+    float TPsl_percent = 0
+    int StopTPNum = 1
 
 type Trade
     int start_bar_index = 0
@@ -216,6 +218,8 @@ selector(string strategy_name) =>
 			strategy_settings.tp4_percent_fix := 10
 			strategy_settings.fixed_stop := false
 			strategy_settings.sl_percent := 0.0
+            strategy_settings.TPsl_percent := 0.0
+            strategy_settings.StopTPNum := 1
 		"UNIVERSAL 15m" => 
 			strategy_settings.sensitivity := 20
 			strategy_settings.risk_percent := 1
@@ -298,6 +302,8 @@ float tp4_percent = 0
 float tp4_percent_fix = 0
 bool fixed_stop = false
 float sl_percent = 0
+float TPsl_percent = 0
+int StopTPNum = 0
 
 strategy_input = input.string(title = "STRATEGY", options = [
      "MANUAL",
@@ -344,6 +350,9 @@ initial_deposit_input = input.float(title = "Initial deposit", defval = 1000, st
 // STOPLOSS
 fixed_stop_input = input.bool(defval = false, title = "Fixed stoploss %", group = STOP_LOSS, tooltip = "EN:\nIf choosed: stoploss will be calculated manually \nIf NOT choosed: stoploss will be calculated automatic\nRU:\nЕсли выбрано: стоп будет рассчитываться вручную \nЕсли НЕ выбрано: стоп будет рассчитываться автоматически")
 sl_percent_input = input.float(title="SL %", step = 0.1, defval=0.00, group = STOP_LOSS)
+TPsl_percent_input = input.float(title="Take profit SL %", step = 0.1, defval=0.00, group = STOP_LOSS)
+StopTPNum_input = input.int(title="С какого тейка безубыток (1-3)", defval = 1, group = STOP_LOSS)
+
 // TAKE PROFITS
 tp1_percent_input = input.float(title="TP 1", step = 0.05, defval=1.00, minval = 0, group = TAKE_PROFITS, inline = "2.2")
 tp1_percent_fix_input = input.float(title = "Fix %", step = 5, defval=40, group = TAKE_PROFITS, inline = "2.2")
@@ -406,7 +415,7 @@ var float dep = initial_deposit_input
 //-----------------------------------------------------MAIN------------------------------------------------------------\\
 // STRATEGY
 
-strategy_s := strategy_input == "MANUAL" ? Strategy_settings.new(sensitivity_input, risk_percent_input, break_even_target_input, tp1_percent_input, tp1_percent_fix_input, tp2_percent_input, tp2_percent_fix_input, tp3_percent_input, tp3_percent_fix_input, tp4_percent_input, tp4_percent_fix_input, fixed_stop_input, sl_percent_input) : selector(strategy_input)
+strategy_s := strategy_input == "MANUAL" ? Strategy_settings.new(sensitivity_input, risk_percent_input, break_even_target_input, tp1_percent_input, tp1_percent_fix_input, tp2_percent_input, tp2_percent_fix_input, tp3_percent_input, tp3_percent_fix_input, tp4_percent_input, tp4_percent_fix_input, fixed_stop_input, sl_percent_input, TPsl_percent_input, StopTPNum_input) : selector(strategy_input)
 
 sensitivity := strategy_s.sensitivity
 risk_percent := strategy_s.risk_percent
@@ -421,6 +430,8 @@ tp4_percent := strategy_s.tp4_percent
 tp4_percent_fix := strategy_s.tp4_percent_fix
 fixed_stop := strategy_s.fixed_stop
 sl_percent := strategy_s.sl_percent
+TPsl_percent := strategy_s.TPsl_percent
+StopTPNum := strategy_s.StopTPNum
 
 sensitivity *= 10
 tp1_percent /= 100
@@ -432,6 +443,7 @@ tp2_percent_fix /= 100
 tp3_percent_fix /= 100
 tp4_percent_fix /= 100
 sl_percent /= 100
+TPsl_percent /= 100
 
 
 high_line = ta.highest(high, int(sensitivity))
@@ -553,6 +565,7 @@ if not na(trade)
 // tp3_percent_fix /= 100
 // tp4_percent_fix /= 100
 // sl_percent /= 100
+// TPsl_percent /= 100
 // fixed_stop := strategy_s.fixed_stop
 
 //alertcondition(can_long and na(trade), "Long signal", "Long") - для лонга
@@ -562,25 +575,25 @@ if not na(trade)
 var float entryPrice = 0
 var float currentTP = 0
 var float currentSL = 0
-sl_percent := float(5) / 100
-var float takeprofitSL = 0.4 / 100 // Изменить 0.4 на нужную цифру, отвечает за стоплоссы для takeprofits
 var string tradeSide = ""
+
+// int StopTPNum = 3 // на каком тейке переводить позицию в безубыток, выставляется в TPsl_percent
 
 if (tradeSide == "LONG" and close >= entryPrice * (1 + currentTP) and currentTP == tp1_percent)
     strategy.close("Enter Long", qty_percent = tp1_percent_fix * 100)
     currentTP := tp2_percent
-    currentSL := tp1_percent + takeprofitSL
-    // currentSL := 0
+    if StopTPNum == 1 
+        currentSL := tp1_percent + TPsl_percent
 else if (tradeSide == "LONG" and close >= entryPrice * (1 + currentTP) and currentTP == tp2_percent)
     strategy.close("Enter Long", qty_percent = tp2_percent_fix * 100)
     currentTP := tp3_percent
-    currentSL := 0
-    sl_percent := 0
-    // currentSL := tp2_percent + takeprofitSL
+    if StopTPNum == 2 
+        currentSL := tp2_percent + TPsl_percent
 else if (tradeSide == "LONG" and close >= entryPrice * (1 + currentTP) and currentTP == tp3_percent)
     strategy.close("Enter Long", qty_percent = tp3_percent_fix * 100)
     currentTP := tp4_percent
-    // currentSL := tp3_percent + takeprofitSL
+    if StopTPNum == 3 
+        currentSL := tp3_percent + TPsl_percent
 else if (tradeSide == "LONG" and close >= entryPrice * (1 + currentTP) and currentTP == tp4_percent)
     // strategy.close("Enter Long", qty_percent = tp4_percent_fix * 100)
     strategy.close("Enter Long")
@@ -593,17 +606,18 @@ else if (currentSL == 0 and tradeSide == "LONG" and close <= entryPrice - (entry
 if (tradeSide == "SHORT" and close <= entryPrice - (entryPrice * currentTP) and currentTP == tp1_percent)
     strategy.close("Enter Short", qty_percent = tp1_percent_fix * 100)
     currentTP := tp2_percent
-    currentSL := tp1_percent + takeprofitSL
+    if StopTPNum == 1 
+        currentSL := tp1_percent + TPsl_percent
 else if (tradeSide == "SHORT" and close <= entryPrice - (entryPrice * currentTP) and currentTP == tp2_percent)
     strategy.close("Enter Short", qty_percent = tp2_percent_fix * 100)
     currentTP := tp3_percent
-    // currentSL := tp2_percent + takeprofitSL
-    currentSL := 0
-    sl_percent := 0
+    if StopTPNum == 2 
+        currentSL := tp2_percent + TPsl_percent
 else if (tradeSide == "SHORT" and close <= entryPrice - (entryPrice * currentTP) and currentTP == tp3_percent)
     strategy.close("Enter Short", qty_percent = tp3_percent_fix * 100)
     currentTP := tp4_percent
-    // currentSL := tp3_percent + takeprofitSL
+    if StopTPNum == 3 
+        currentSL := tp3_percent + TPsl_percent
 else if (tradeSide == "SHORT" and close <= entryPrice - (entryPrice * currentTP) and currentTP == tp4_percent)
     // strategy.close("Enter Short", qty_percent = tp4_percent_fix * 100)
     strategy.close("Enter Short")
@@ -621,6 +635,8 @@ if (can_short and na(trade))
     strategy.entry("Enter Short", strategy.short)
 
 plot(sl_percent)
+plot(TPsl_percent)
+plot(currentSL)
 
 if can_long or can_short and na(trade)
     entryPrice := close
