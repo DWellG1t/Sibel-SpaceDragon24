@@ -567,6 +567,7 @@ if not na(trade)
 // sl_percent /= 100
 // TPsl_percent /= 100
 // fixed_stop := strategy_s.fixed_stop
+// StopTPNum
 
 //alertcondition(can_long and na(trade), "Long signal", "Long") - для лонга
 //alertcondition(can_short and na(trade), "Short signal", "Short") - для шорта
@@ -637,6 +638,7 @@ if (can_short and na(trade))
 plot(sl_percent)
 plot(TPsl_percent)
 plot(currentSL)
+plot(entryPrice)
 
 if can_long or can_short and na(trade)
     entryPrice := close
