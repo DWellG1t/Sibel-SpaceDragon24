@@ -577,6 +577,7 @@ var float entryPrice = 0
 var float currentTP = 0
 var float currentSL = 0
 var string tradeSide = ""
+var bool canSignal = true
 
 // int StopTPNum = 3 // на каком тейке переводить позицию в безубыток, выставляется в TPsl_percent
 
@@ -600,8 +601,10 @@ else if (tradeSide == "LONG" and close >= entryPrice * (1 + currentTP) and curre
     strategy.close("Enter Long")
 else if (currentSL != 0 and tradeSide == "LONG" and close <= entryPrice - (entryPrice * currentSL))
     strategy.close("Enter Long")
+    canSignal := true
 else if (currentSL == 0 and tradeSide == "LONG" and close <= entryPrice - (entryPrice * sl_percent))
     strategy.close("Enter Long")
+    canSignal := true
 
 
 if (tradeSide == "SHORT" and close <= entryPrice - (entryPrice * currentTP) and currentTP == tp1_percent)
@@ -624,23 +627,27 @@ else if (tradeSide == "SHORT" and close <= entryPrice - (entryPrice * currentTP)
     strategy.close("Enter Short")
 else if (currentSL != 0 and tradeSide == "SHORT" and close >= entryPrice + (entryPrice * currentSL))
     strategy.close("Enter Short")
+    canSignal := true
 else if (currentSL == 0 and tradeSide == "SHORT" and close >= entryPrice + (entryPrice * sl_percent))
     strategy.close("Enter Short")
+    canSignal := true
 
-if (can_long and na(trade))
+if (can_long and na(trade) and canSignal)
     strategy.close("Enter Short")
     strategy.entry("Enter Long", strategy.long)
+    canSignal := false
 
-if (can_short and na(trade))
+if (can_short and na(trade) and canSignal)
     strategy.close("Enter Long")
     strategy.entry("Enter Short", strategy.short)
+    canSignal := false
 
 plot(sl_percent)
 plot(TPsl_percent)
 plot(currentSL)
 plot(entryPrice)
 
-if can_long or can_short and na(trade)
+if can_long or can_short and na(trade) and canSignal
     entryPrice := close
     currentTP := tp1_percent
     currentSL := sl_percent
