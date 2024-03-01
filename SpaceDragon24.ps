@@ -599,6 +599,7 @@ else if (tradeSide == "LONG" and close >= entryPrice * (1 + currentTP) and curre
 else if (tradeSide == "LONG" and close >= entryPrice * (1 + currentTP) and currentTP == tp4_percent)
     // strategy.close("Enter Long", qty_percent = tp4_percent_fix * 100)
     strategy.close("Enter Long")
+    canSignal := true
 else if (currentSL != 0 and tradeSide == "LONG" and close <= entryPrice - (entryPrice * currentSL))
     strategy.close("Enter Long")
     canSignal := true
@@ -625,6 +626,7 @@ else if (tradeSide == "SHORT" and close <= entryPrice - (entryPrice * currentTP)
 else if (tradeSide == "SHORT" and close <= entryPrice - (entryPrice * currentTP) and currentTP == tp4_percent)
     // strategy.close("Enter Short", qty_percent = tp4_percent_fix * 100)
     strategy.close("Enter Short")
+    canSignal := true
 else if (currentSL != 0 and tradeSide == "SHORT" and close >= entryPrice + (entryPrice * currentSL))
     strategy.close("Enter Short")
     canSignal := true
