@@ -650,7 +650,7 @@ plot(entryPrice)
 if can_long or can_short and na(trade) and canSignal
     entryPrice := close
     currentTP := tp1_percent
-    currentSL := sl_percent
+    currentSL := 0
     canSignal := false
     first_trade_date := trade_count == 0 ? timestamp(year, month, dayofmonth, hour, minute) : first_trade_date
     trade := Trade.new()
